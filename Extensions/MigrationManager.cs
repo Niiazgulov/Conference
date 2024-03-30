@@ -14,7 +14,7 @@ namespace ConfApp.Extensions
 
                 try
                 {
-                    databaseService.CreateDatabase("ConfApps");
+                    databaseService.CreateDatabase("conference");
 
                     migrationService.ListMigrations();
                     migrationService.MigrateUp();

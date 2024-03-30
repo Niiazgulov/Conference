@@ -1,11 +1,9 @@
 ﻿using FluentMigrator;
-using Microsoft.AspNetCore.Http.HttpResults;
-using System;
 
 namespace ConfApp.Migrations
 {
-    [Migration(202403290001)]
-    public class InitialTables_202403290001 : Migration
+    [Migration(202403290002)]
+    public class InitialTables_202403290002 : Migration
     {
         public override void Down()
         {
