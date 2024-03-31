@@ -1,25 +1,29 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
-using System.Security.Cryptography.X509Certificates;
+﻿using Microsoft.AspNetCore.Mvc;
 using Domain;
-using Domain.Handlers.Contract;
 using Domain.Handlers.Contracts;
-using Microsoft.AspNetCore.Http.HttpResults;
-using System.Data;
-using Domain.Handlers;
+
 
 namespace ConfApp.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class RepositoryController : ControllerBase
+    public class ApplicationsRepositoryController : ControllerBase
     {
-        private IRepositoryHandler _repositoryHandler;
+        private IEditAppsHandler _editAppsHandler;
+        private IAddNewApplicationHandler _addNewApplicationHandler;
+        private IGetAppsByIdHandler _getAppsByIdHandler;
+        private IDeleteAppsHandler _deleteAppsHandler;
+        private ICheckSendedHandler _checkSendedHandler;
+        private IAddAppsToReviewHandler _addAppsToReviewHandler;
 
-        public RepositoryController(IRepositoryHandler repositoryHandler)
+        public ApplicationsRepositoryController(IEditAppsHandler editAppsHandler, IAddNewApplicationHandler addNewApplicationHandler, IGetAppsByIdHandler getAppsByIdHandler, IDeleteAppsHandler deleteAppsHandler, ICheckSendedHandler checkSendedHandler, IAddAppsToReviewHandler addAppsToReviewHandler)
         {
-            _repositoryHandler = repositoryHandler;
+            _editAppsHandler = editAppsHandler;
+            _addNewApplicationHandler = addNewApplicationHandler;
+            _getAppsByIdHandler = getAppsByIdHandler;
+            _deleteAppsHandler = deleteAppsHandler;
+            _checkSendedHandler = checkSendedHandler;
+            _addAppsToReviewHandler = addAppsToReviewHandler;
         }
 
         [HttpPost("applications")]
@@ -30,7 +34,7 @@ namespace ConfApp.Controllers
                 if (app.Author.ToString() == "00000000-0000-0000-0000-000000000000")
                     return StatusCode(400, "Укажите идентификатор автора в формате Guid!");
 
-                var newapp = await _repositoryHandler.AddApps(app);
+                var newapp = await _addNewApplicationHandler.AddApps(app);
                 if (newapp == null)
                     return NotFound();
                 if (newapp.Author.ToString() == "00000000-0000-0000-0000-000000000001")
@@ -51,14 +55,14 @@ namespace ConfApp.Controllers
         {
             try
             {
-                //var dbApp = await _repositoryHandler.GetAppById(id);
-                //if (dbApp == null)
-                //    return NotFound();
-                var sended = await _repositoryHandler.CheckSended(id);
+                var dbApp = await _getAppsByIdHandler.GetAppsById(id);
+                if (dbApp == null)
+                    return NotFound();
+                var sended = await _checkSendedHandler.CheckSended(id);
                 if (sended == "YES")
                     return StatusCode(400, "ОШИБКА! Невозможно выполнить, заявка уже направлена на рассмотрение.");
 
-                var editedapp = await _repositoryHandler.EditApps(id, app);
+                var editedapp = await _editAppsHandler.EditApps(id, app);
                 if (editedapp == null)
                     return NotFound();
 
@@ -66,7 +70,7 @@ namespace ConfApp.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(400, ex.Message);
             }
         }
 
@@ -75,19 +79,19 @@ namespace ConfApp.Controllers
         {
             try
             {
-                //var dbCompany = await _companyRepo.GetCompany(id);
-                // if (dbCompany == null)
-                //    return NotFound();
-                var sended = await _repositoryHandler.CheckSended(id);
+                var dbApp = await _getAppsByIdHandler.GetAppsById(id);
+                if (dbApp == null)
+                    return NotFound();
+                var sended = await _checkSendedHandler.CheckSended(id);
                 if (sended == "YES")
                     return StatusCode(400, "ОШИБКА! Невозможно выполнить, заявка уже направлена на рассмотрение.");
 
-                await _repositoryHandler.DeleteApps(id);
+                await _deleteAppsHandler.DeleteApps(id);
                 return Ok();
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(400, ex.Message);
             }
 
         }
@@ -97,54 +101,18 @@ namespace ConfApp.Controllers
         {
             try
             {
-                //var dbCompany = await _companyRepo.GetCompany(id);
-                // if (dbCompany == null)
-                //    return NotFound();
-                string result = await _repositoryHandler.AddAppsToReview(id);
+                var dbApp = await _getAppsByIdHandler.GetAppsById(id);
+                if (dbApp == null)
+                    return NotFound();
+                string result = await _addAppsToReviewHandler.AddAppsToReview(id);
                 if (result == "Success")
                     return Ok();
                 return StatusCode(400, "В черновике заявки есть поле NULL! Заявка не может быть отправлена, добавьте недостающие данные.");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(400, ex.Message);
             }
         }
-
-
-
-
-
-
-        /*
-        public IActionResult CreateItem(ItemDto item, [FromQuery] DateTime date)
-        {
-            ItemResult result = new ItemResult()
-            {
-                Id = Guid.NewGuid(),
-                Author = item.AuthorId,
-                Count = item.Count
-            };
-
-            return Ok(result);
-        }
-        */
     }
 }
-
-    /*
-    public class ItemDto
-    {
-        public string ActivityType = Domain.ActivityType.ReportType; 
-        public Guid AuthorId { get; init; }
-        public int Count { get; init; }
-    }
-    
-    public class ItemResult
-    {
-        public Guid Id { get; init; }
-        public Guid Author { get; init; }
-        public int Count { get; init; }
-    }
-}
-    */
