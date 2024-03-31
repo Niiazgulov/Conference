@@ -11,5 +11,8 @@ namespace Domain.Handlers.Contracts
         Task<Applications> AddApps(NewAppDTO app);
         Task<Applications> EditApps(Guid id, EditedAppDTO app);
         Task DeleteApps(Guid id);
+        Task<string> AddAppsToReview(Guid id);
+        Task<string> CheckSended(Guid id);
+ 
     }
 }

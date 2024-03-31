@@ -18,9 +18,23 @@ namespace Domain.Handlers
 
         public Task<Applications> AddApps(NewAppDTO app)
         {
-            Task<Applications> newapp = _conferenceAppsRepository.AddApps(app);
+            Task<Applications> emptyApp = _conferenceAppsRepository.EmptyApp();
+            var dbCount = NonNullPropertiesCount(app);
+            if (dbCount > 1)
+            {
+                Task<bool> exists = _conferenceAppsRepository.CheckUserById(app.Author);
 
-            return newapp;
+                if (exists.Result == true)
+                {
+                    emptyApp.Result.Author = new Guid("00000000-0000-0000-0000-000000000001");
+                    return emptyApp;
+                }
+
+                Task<Applications> newapp = _conferenceAppsRepository.AddApps(app);
+                return newapp;
+            }
+            
+            return emptyApp;
         }
 
         public Task<Applications> EditApps(Guid id, EditedAppDTO app)
@@ -29,6 +43,7 @@ namespace Domain.Handlers
 
             return editedapp;
         }
+
         public Task DeleteApps(Guid id)
         {
             Task deleted = _conferenceAppsRepository.DeleteApps(id);
@@ -36,5 +51,26 @@ namespace Domain.Handlers
             return deleted;
         }
 
-}
+        public Task<string> AddAppsToReview(Guid id)
+        {
+            Task<string> added = _conferenceAppsRepository.AddAppsToReview(id);
+            return added;
+        }
+
+        public Task<string> CheckSended(Guid id)
+        {
+            Task<string> checkresult = _conferenceAppsRepository.CheckSended(id);
+            return checkresult;
+        }
+
+
+        public int NonNullPropertiesCount(object entity)
+        {
+            return entity.GetType()
+                         .GetProperties()
+                         .Select(x => x.GetValue(entity, null))
+                         .Count(v => v != null);
+        }
+
+    }
 }
