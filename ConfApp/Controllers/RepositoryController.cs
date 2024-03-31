@@ -7,6 +7,7 @@ using Domain.Handlers.Contract;
 using Domain.Handlers.Contracts;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.Data;
+using Domain.Handlers;
 
 namespace ConfApp.Controllers
 {
@@ -32,6 +33,10 @@ namespace ConfApp.Controllers
                 var newapp = await _repositoryHandler.AddApps(app);
                 if (newapp == null)
                     return NotFound();
+                if (newapp.Author.ToString() == "00000000-0000-0000-0000-000000000001")
+                    return StatusCode(400, "У этого автора уже есть 1 заявка в черновиках, больше добавить невозможно.");
+                if (newapp.Id.ToString() == "00000000-0000-0000-0000-000000000000")
+                    return StatusCode(400, "Заполните еще хотя бы 1 поле в черновике заявки.");
 
                 return Ok(newapp);
             }
@@ -49,6 +54,10 @@ namespace ConfApp.Controllers
                 //var dbApp = await _repositoryHandler.GetAppById(id);
                 //if (dbApp == null)
                 //    return NotFound();
+                var sended = await _repositoryHandler.CheckSended(id);
+                if (sended == "YES")
+                    return StatusCode(400, "ОШИБКА! Невозможно выполнить, заявка уже направлена на рассмотрение.");
+
                 var editedapp = await _repositoryHandler.EditApps(id, app);
                 if (editedapp == null)
                     return NotFound();
@@ -67,19 +76,40 @@ namespace ConfApp.Controllers
             try
             {
                 //var dbCompany = await _companyRepo.GetCompany(id);
-               // if (dbCompany == null)
+                // if (dbCompany == null)
                 //    return NotFound();
+                var sended = await _repositoryHandler.CheckSended(id);
+                if (sended == "YES")
+                    return StatusCode(400, "ОШИБКА! Невозможно выполнить, заявка уже направлена на рассмотрение.");
+
                 await _repositoryHandler.DeleteApps(id);
                 return Ok();
             }
             catch (Exception ex)
             {
-                //log error
+                return StatusCode(500, ex.Message);
+            }
+
+        }
+
+        [HttpPost("applications/{id}/submit")]
+        public async Task<IActionResult> AddAppsToReview(Guid id)
+        {
+            try
+            {
+                //var dbCompany = await _companyRepo.GetCompany(id);
+                // if (dbCompany == null)
+                //    return NotFound();
+                string result = await _repositoryHandler.AddAppsToReview(id);
+                if (result == "Success")
+                    return Ok();
+                return StatusCode(400, "В черновике заявки есть поле NULL! Заявка не может быть отправлена, добавьте недостающие данные.");
+            }
+            catch (Exception ex)
+            {
                 return StatusCode(500, ex.Message);
             }
         }
-
-
 
 
 
