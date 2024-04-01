@@ -2,6 +2,6 @@
 {
     public interface IAddNewApplicationHandler
     {
-        Task<Applications> AddApps(NewAppDTO app);
+        Task<(bool, string, Applications)> AddApps(NewAppDTO app);
     }
 }
