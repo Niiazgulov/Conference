@@ -1,4 +1,5 @@
 using Readers;
+using Domain.Validators;
 using Domain.QueryHandlers;
 using ConfApp.Context;
 using ConfApp.Migrations;
@@ -14,6 +15,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddReaders();
 builder.Services.AddHandlers();
+builder.Services.AddValidators();
 builder.Services.AddControllers();
 builder.Services.AddSingleton<DapperContext>();
 builder.Services.AddSingleton<Database>();

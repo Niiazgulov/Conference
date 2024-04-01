@@ -21,7 +21,6 @@ namespace Readers.Repository
             using (NpgsqlConnection connection = new NpgsqlConnection(_configuration.GetConnectionString("NpgConnection")))
             {
                 var requestedApp = await connection.QuerySingleOrDefaultAsync<bool>(query, new { author });
-                Console.WriteLine(requestedApp);
                 if (requestedApp == true)
                 {
                     return true;

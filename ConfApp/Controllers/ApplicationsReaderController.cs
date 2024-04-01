@@ -54,12 +54,12 @@ namespace ConfApp.Controllers
             }
         }
 
-        [HttpGet("applications/unsubmittedOlder=\"{datetime}\"")]
-        public async Task<IActionResult> GetUnsubmittedApps([FromRoute] DateTime datetime)
+        [HttpGet("applications")]
+        public async Task<IActionResult> GetUnsubmittedApps([FromQuery] DateTime unsubmittedOlder)
         {
             try
             {
-                var apps = await _getUnsubmittedAppsHandler.GetUnsubmittedApps(datetime);
+                var apps = await _getUnsubmittedAppsHandler.GetUnsubmittedApps(unsubmittedOlder);
                 return Ok(apps);
             }
             catch (Exception ex)

@@ -31,16 +31,14 @@ namespace ConfApp.Controllers
         {
             try
             {
-                if (app.Author.ToString() == "00000000-0000-0000-0000-000000000000")
-                    return StatusCode(400, "Укажите идентификатор автора в формате Guid!");
+                (bool res, string message, Applications newapp) = await _addNewApplicationHandler.AddApps(app);
+                if (res == false)
+                {
+                    Console.WriteLine("Controller:");
+                    Console.WriteLine(message);
 
-                var newapp = await _addNewApplicationHandler.AddApps(app);
-                if (newapp == null)
-                    return NotFound();
-                if (newapp.Author.ToString() == "00000000-0000-0000-0000-000000000001")
-                    return StatusCode(400, "У этого автора уже есть 1 заявка в черновиках, больше добавить невозможно.");
-                if (newapp.Id.ToString() == "00000000-0000-0000-0000-000000000000")
-                    return StatusCode(400, "Заполните еще хотя бы 1 поле в черновике заявки.");
+                    return StatusCode(400, message);
+                }
 
                 return Ok(newapp);
             }
