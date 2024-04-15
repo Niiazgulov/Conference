@@ -1,6 +1,5 @@
 ﻿using ConfApp.Context;
 using Dapper;
-using Npgsql;
 
 namespace ConfApp.Migrations
 {

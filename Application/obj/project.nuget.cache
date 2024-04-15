@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "o/iKbXMf2HcbIWosbUI6O7gxSxa9k5D4KEXLW30ukxCTAKT+ZIF5WWp3Hn8QQ7E7Npey0ovOnWqDcYBH0StQhQ==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\user\\source\\repos\\ConferenceApp\\Application\\Application.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\user\\.nuget\\packages\\dapper\\2.1.35\\dapper.2.1.35.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\microsoft.extensions.dependencyinjection\\8.0.0\\microsoft.extensions.dependencyinjection.8.0.0.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.0\\microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
