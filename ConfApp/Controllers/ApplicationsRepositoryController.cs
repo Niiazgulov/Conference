@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Domain;
-using Domain.Handlers.Contracts;
-
+using Application.Handlers.Contracts.CommandHandlers;
+using Domain.Models;
 
 namespace ConfApp.Controllers
 {
@@ -11,60 +10,46 @@ namespace ConfApp.Controllers
     {
         private IEditAppsHandler _editAppsHandler;
         private IAddNewApplicationHandler _addNewApplicationHandler;
-        private IGetAppsByIdHandler _getAppsByIdHandler;
         private IDeleteAppsHandler _deleteAppsHandler;
-        private ICheckSendedHandler _checkSendedHandler;
         private IAddAppsToReviewHandler _addAppsToReviewHandler;
 
-        public ApplicationsRepositoryController(IEditAppsHandler editAppsHandler, IAddNewApplicationHandler addNewApplicationHandler, IGetAppsByIdHandler getAppsByIdHandler, IDeleteAppsHandler deleteAppsHandler, ICheckSendedHandler checkSendedHandler, IAddAppsToReviewHandler addAppsToReviewHandler)
+        public ApplicationsRepositoryController(IEditAppsHandler editAppsHandler, IAddNewApplicationHandler addNewApplicationHandler, IDeleteAppsHandler deleteAppsHandler, IAddAppsToReviewHandler addAppsToReviewHandler)
         {
             _editAppsHandler = editAppsHandler;
             _addNewApplicationHandler = addNewApplicationHandler;
-            _getAppsByIdHandler = getAppsByIdHandler;
             _deleteAppsHandler = deleteAppsHandler;
-            _checkSendedHandler = checkSendedHandler;
             _addAppsToReviewHandler = addAppsToReviewHandler;
         }
 
         [HttpPost("applications")]
-        public async Task<IActionResult> CreateApp(NewAppDTO app)
+        public async Task<IActionResult> AddApp(NewAppDTO app)
         {
             try
             {
-                (bool res, string message, Applications newapp) = await _addNewApplicationHandler.AddApps(app);
-                if (res == false)
+                var addAppsResult = await _addNewApplicationHandler.AddApps(app);
+                if (addAppsResult.Result)
                 {
-                    Console.WriteLine("Controller:");
-                    Console.WriteLine(message);
-
-                    return StatusCode(400, message);
+                    return Ok(addAppsResult.Newapp);
                 }
-
-                return Ok(newapp);
+                return StatusCode(400, addAppsResult.Message);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(400, ex.Message);
             }
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateApp(Guid id, EditedAppDTO app)
+        public async Task<IActionResult> EditApp(Guid id, EditedAppDTO app)
         {
             try
             {
-                var dbApp = await _getAppsByIdHandler.GetAppsById(id);
-                if (dbApp == null)
-                    return NotFound();
-                var sended = await _checkSendedHandler.CheckSended(id);
-                if (sended == "YES")
-                    return StatusCode(400, "ОШИБКА! Невозможно выполнить, заявка уже направлена на рассмотрение.");
-
-                var editedapp = await _editAppsHandler.EditApps(id, app);
-                if (editedapp == null)
-                    return NotFound();
-
-                return Ok(editedapp);
+                var editAppsResult = await _editAppsHandler.EditApps(id, app);
+                if (editAppsResult.Result)
+                {
+                    return Ok(editAppsResult.Editedapp);
+                }
+                return StatusCode(400, editAppsResult.Message);
             }
             catch (Exception ex)
             {
@@ -77,35 +62,30 @@ namespace ConfApp.Controllers
         {
             try
             {
-                var dbApp = await _getAppsByIdHandler.GetAppsById(id);
-                if (dbApp == null)
-                    return NotFound();
-                var sended = await _checkSendedHandler.CheckSended(id);
-                if (sended == "YES")
-                    return StatusCode(400, "ОШИБКА! Невозможно выполнить, заявка уже направлена на рассмотрение.");
-
-                await _deleteAppsHandler.DeleteApps(id);
-                return Ok();
+                var deleteAppsResult = await _deleteAppsHandler.DeleteApps(id);
+                if (deleteAppsResult.Result)
+                {
+                    return Ok();
+                }
+                return StatusCode(400, deleteAppsResult.Message);
             }
             catch (Exception ex)
             {
                 return StatusCode(400, ex.Message);
             }
-
         }
 
         [HttpPost("applications/{id}/submit")]
-        public async Task<IActionResult> AddAppsToReview(Guid id)
+        public async Task<IActionResult> AddAppToReview(Guid id)
         {
             try
             {
-                var dbApp = await _getAppsByIdHandler.GetAppsById(id);
-                if (dbApp == null)
-                    return NotFound();
-                string result = await _addAppsToReviewHandler.AddAppsToReview(id);
-                if (result == "Success")
+                var reviewAddAppsResult = await _addAppsToReviewHandler.AddAppsToReview(id);
+                if (reviewAddAppsResult.Result)
+                {
                     return Ok();
-                return StatusCode(400, "В черновике заявки есть поле NULL! Заявка не может быть отправлена, добавьте недостающие данные.");
+                }
+                return StatusCode(400, reviewAddAppsResult.Message);
             }
             catch (Exception ex)
             {

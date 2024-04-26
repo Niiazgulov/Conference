@@ -1,6 +1,5 @@
-﻿using Domain.Handlers;
-using Domain.Handlers.Contract;
-using Domain.Handlers.Contracts;
+﻿using Application.Handlers.Contracts.QueryHandlers;
+using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ConfApp.Controllers
@@ -10,15 +9,13 @@ namespace ConfApp.Controllers
     public class ApplicationsReaderController : ControllerBase
     {
         private IGetAppsByIdHandler _getAppsByIdHandler;
-        private IGetUnsubmittedAppsHandler _getUnsubmittedAppsHandler;
-        private IGetSubmittedAppsHandler _getSubmittedAppsHandler;
+        private IGetSubOrUnsubmittedAppsHandler _getSubOrUnsubmittedAppsHandler;
         private IGetAppByAuthorIdHandler _getAppByAuthorIdHandler;
 
-        public ApplicationsReaderController(IGetAppsByIdHandler getAppsByIdHandler, IGetUnsubmittedAppsHandler getUnsubmittedAppsHandler, IGetSubmittedAppsHandler getSubmittedAppsHandler, IGetAppByAuthorIdHandler getAppByAuthorIdHandler)
+        public ApplicationsReaderController(IGetAppsByIdHandler getAppsByIdHandler, IGetSubOrUnsubmittedAppsHandler getSubOrUnsubmittedAppsHandler, IGetAppByAuthorIdHandler getAppByAuthorIdHandler)
         {
             _getAppsByIdHandler = getAppsByIdHandler;
-            _getUnsubmittedAppsHandler = getUnsubmittedAppsHandler;
-            _getSubmittedAppsHandler = getSubmittedAppsHandler;
+            _getSubOrUnsubmittedAppsHandler = getSubOrUnsubmittedAppsHandler;
             _getAppByAuthorIdHandler = getAppByAuthorIdHandler;
         }
 
@@ -29,7 +26,7 @@ namespace ConfApp.Controllers
             {
                 var app = await _getAppsByIdHandler.GetAppsById(id);
                 if (app == null)
-                    return NotFound();
+                    return StatusCode(404, "ОШИБКА! Такой заявки не существует.");
                 return Ok(app);
             }
             catch (Exception ex)
@@ -45,7 +42,7 @@ namespace ConfApp.Controllers
             {
                 var app = await _getAppByAuthorIdHandler.GetAppByAuthorId(authorId);
                 if (app == null)
-                    return NotFound();
+                    return StatusCode(404, "ОШИБКА! Такого автора не существует.");
                 return Ok(app);
             }
             catch (Exception ex)
@@ -55,32 +52,21 @@ namespace ConfApp.Controllers
         }
 
         [HttpGet("applications")]
-        public async Task<IActionResult> GetUnsubmittedApps([FromQuery] DateTime unsubmittedOlder)
+        public async Task<IActionResult> GetUnsubmittedApps(SubOrUnsubDTO req)
         {
             try
             {
-                var apps = await _getUnsubmittedAppsHandler.GetUnsubmittedApps(unsubmittedOlder);
-                return Ok(apps);
+                (bool res, string? message, IEnumerable<Applications>? newapps) = await _getSubOrUnsubmittedAppsHandler.GetSubOrUnSubmittedApps(req);
+                if (res)
+                {
+                    return Ok(newapps);
+                }
+                return StatusCode(400, message);
             }
             catch (Exception ex)
             {
                 return StatusCode(400, ex.Message);
             }
         }
-
-        [HttpGet("applications/submittedAfter=\"{datetime}\"")]
-        public async Task<IActionResult> GetSubmittedApps([FromRoute] DateTime datetime)
-        {
-            try
-            {
-                var apps = await _getSubmittedAppsHandler.GetSubmittedApps(datetime);
-                return Ok(apps);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(400, ex.Message);
-            }
-        }
-
     }
 }

@@ -120,6 +120,19 @@
           }
         }
       },
+      "Application/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "Domain": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Application.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Application.dll": {}
+        }
+      },
       "Domain/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v8.0",
@@ -132,7 +145,10 @@
         },
         "runtime": {
           "bin/placeholder/Domain.dll": {}
-        }
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
       }
     }
   },
@@ -374,6 +390,11 @@
         "postgresql.png"
       ]
     },
+    "Application/1.0.0": {
+      "type": "project",
+      "path": "../Application/Application.csproj",
+      "msbuildProject": "../Application/Application.csproj"
+    },
     "Domain/1.0.0": {
       "type": "project",
       "path": "../Domain/Domain.csproj",
@@ -382,6 +403,7 @@
   },
   "projectFileDependencyGroups": {
     "net8.0": [
+      "Application >= 1.0.0",
       "Dapper >= 2.1.35",
       "Domain >= 1.0.0",
       "Microsoft.Extensions.Configuration.Abstractions >= 9.0.0-preview.2.24128.5",
@@ -395,9 +417,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\user\\source\\repos\\ConferenceApp\\Readers\\Readers.csproj",
-      "projectName": "Readers",
-      "projectPath": "C:\\Users\\user\\source\\repos\\ConferenceApp\\Readers\\Readers.csproj",
+      "projectUniqueName": "C:\\Users\\user\\source\\repos\\ConferenceApp\\Readers\\DataAccess.csproj",
+      "projectName": "DataAccess",
+      "projectPath": "C:\\Users\\user\\source\\repos\\ConferenceApp\\Readers\\DataAccess.csproj",
       "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\user\\source\\repos\\ConferenceApp\\Readers\\obj\\",
       "projectStyle": "PackageReference",
@@ -416,6 +438,9 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
+            "C:\\Users\\user\\source\\repos\\ConferenceApp\\Application\\Application.csproj": {
+              "projectPath": "C:\\Users\\user\\source\\repos\\ConferenceApp\\Application\\Application.csproj"
+            },
             "C:\\Users\\user\\source\\repos\\ConferenceApp\\Domain\\Domain.csproj": {
               "projectPath": "C:\\Users\\user\\source\\repos\\ConferenceApp\\Domain\\Domain.csproj"
             }

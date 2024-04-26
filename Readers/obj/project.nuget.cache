@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "/T9Lv9D3QnSP6eV2t3lSb0lCjoU/quyB97nv38OZA80FlQWEX/4wWzzQrX+zehMDhZ22SRI7bXIFLvzYIL5m+w==",
+  "dgSpecHash": "mT0L0LcvYaicGCR+qKKGtahrMx49CPXeBsf3Ed4JzUxGWKOy1guMcRaicoO0SZxuY7R6laHDJUpueWUEIW3sjg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\user\\source\\repos\\ConferenceApp\\Readers\\Readers.csproj",
+  "projectFilePath": "C:\\Users\\user\\source\\repos\\ConferenceApp\\Readers\\DataAccess.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\user\\.nuget\\packages\\dapper\\2.1.35\\dapper.2.1.35.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\9.0.0-preview.2.24128.5\\microsoft.extensions.configuration.abstractions.9.0.0-preview.2.24128.5.nupkg.sha512",

@@ -1,11 +1,11 @@
-using Readers;
-using Domain.Validators;
-using Domain.QueryHandlers;
 using ConfApp.Context;
 using ConfApp.Migrations;
 using ConfApp.Extensions;
 using FluentMigrator.Runner;
 using System.Reflection;
+using DataAccess;
+using Application.Validators;
+using Application.Handlers;
 
 
 var builder = WebApplication.CreateBuilder(args);

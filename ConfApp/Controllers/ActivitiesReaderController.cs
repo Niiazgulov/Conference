@@ -1,6 +1,4 @@
-﻿using Domain.Handlers;
-using Domain.Handlers.Contract;
-using Domain.Handlers.Contracts;
+﻿using Application.Handlers.Contracts.QueryHandlers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ConfApp.Controllers
@@ -10,7 +8,6 @@ namespace ConfApp.Controllers
     public class ActivitiesReaderController : ControllerBase
     {
         private IGetActivitiesRequestHandler _getActivityHandler;
-
         public ActivitiesReaderController(IGetActivitiesRequestHandler getActivityHandler)
         {
             _getActivityHandler = getActivityHandler;
@@ -21,6 +18,5 @@ namespace ConfApp.Controllers
         {
             return Ok(_getActivityHandler.GetActivities());
         }
-
     }
 }
